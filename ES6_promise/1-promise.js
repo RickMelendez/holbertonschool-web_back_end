@@ -1,6 +1,5 @@
 export default function getFullResponseFromAPI() {
   return new Promise((resolve, reject) => {
-
     const success = true;
 
     if (success) {
@@ -13,4 +12,3 @@ export default function getFullResponseFromAPI() {
     }
   });
 }
-  
