@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-"""Defines the sum of the float values."""
+""" Defines the sum of the floar values"""
+
 
 def add(a: float, b: float) -> float:
     """
@@ -11,6 +12,6 @@ def add(a: float, b: float) -> float:
     b (float): The second number to add.
 
     Returns:
-    float: The sum of `a` and `b`.
+    float: The sum of `a` and `b`
     """
     return a + b
