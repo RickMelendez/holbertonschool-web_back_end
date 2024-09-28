@@ -1,35 +1,36 @@
 const fs = require('fs');
 
-function countStudents(path) {
-    return new Promise((resolve, reject) => {
-        fs.readFile(path, 'utf8', (err, data) => {
-            if (err) {
-                reject(new Error('Cannot load the database'));
-                return;
-            }
+const countStudents = (path) => new Promise((resolve, reject) => {
+  fs.readFile(path, (error, csvData) => {
+    if (error) {
+      reject(Error('Cannot load the database'));
+    }
+    if (csvData) {
+      const fields = {};
+      let data = csvData.toString().split('\n');
+      data = data.filter((element) => element.length > 0);
+      data.shift();
 
-            const lines = data.split('\n').filter(line => line.trim() !== '');
-            if (lines.length === 0) {
-                reject(new Error('Cannot load the database'));
-                return;
-            }
+      data.forEach((element) => {
+        if (element.length > 0) {
+          const row = element.split(',');
+          if (row[3] in fields) {
+            fields[row[3]].push(row[0]);
+          } else {
+            fields[row[3]] = [row[0]];
+          }
+        }
+      });
+      console.log(`Number of students: ${data.length}`);
+      for (const field in fields) {
+        if (field) {
+          const list = fields[field];
+          console.log(`Number of students in ${field}: ${list.length}. List: ${list.toString().replace(/,/g, ', ')}`);
+        }
+      }
+    }
+    resolve();
+  });
+});
 
-            console.log(`Number of students: ${lines.length - 1}`);
-
-            const fields = {};
-            lines.slice(1).forEach(line => {
-                const [firstname, , , field] = line.split(',');
-                if (!fields[field]) fields[field] = [];
-                fields[field].push(firstname);
-            });
-
-            Object.keys(fields).forEach(field => {
-                console.log(`Number of students in ${field}: ${fields[field].length}. List: ${fields[field].join(', ')}`);
-            });
-
-            resolve();
-        });
-    });
-}
-
-module.exports = { countStudents };
+module.exports = countStudents;
