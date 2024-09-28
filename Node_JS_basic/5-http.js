@@ -4,12 +4,12 @@ const fs = require('fs');
 function countStudents(path) {
     return new Promise((resolve, reject) => {
         fs.readFile(path, { encoding: 'utf-8' }, (err, data) => {
-            if (err) return reject(Error('Cannot load the database'));
+            if (err) return reject(new Error('Cannot load the database'));
 
-            const lines = data.split('\n').slice(1, -1);
-            const header = data.split('\n').slice(0, 1)[0].split(',');
-            const idxFn = header.findIndex((ele) => ele === 'firstname');
-            const idxFd = header.findIndex((ele) => ele === 'field');
+            const lines = data.split('\n').slice(1, -1); // skip header and last empty line
+            const header = data.split('\n')[0].split(','); // get header line
+            const idxFn = header.indexOf('firstname');
+            const idxFd = header.indexOf('field');
             const fields = {};
             const students = {};
             const all = {};
@@ -19,20 +19,20 @@ function countStudents(path) {
                 if (!fields[list[idxFd]]) fields[list[idxFd]] = 0;
                 fields[list[idxFd]] += 1;
                 if (!students[list[idxFd]]) students[list[idxFd]] = '';
-                students[list[idxFd]] += students[list[idxFd]]
-                    ? `, ${list[idxFn]}`
+                students[list[idxFd]] += students[list[idxFd]] 
+                    ? `, ${list[idxFn]}` 
                     : list[idxFn];
             });
 
             all.numberStudents = `Number of students: ${lines.length}\n`;
             all.listStudents = [];
             for (const key in fields) {
-                if (Object.hasOwnProperty.call(fields, key)) {
+                if (Object.prototype.hasOwnProperty.call(fields, key)) {
                     const element = fields[key];
                     all.listStudents.push(`Number of students in ${key}: ${element}. List: ${students[key]}`);
                 }
             }
-            return resolve(all);
+            resolve(all);
         });
     });
 }
@@ -43,8 +43,10 @@ const port = 1245;
 const app = http.createServer((req, res) => {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain');
-    if (req.url === '/') res.end('Hello Holberton School!');
-    if (req.url === '/students') {
+
+    if (req.url === '/') {
+        res.end('Hello Holberton School!');
+    } else if (req.url === '/students') {
         res.write('This is the list of our students\n');
         countStudents(process.argv[2])
             .then((data) => {
@@ -53,11 +55,17 @@ const app = http.createServer((req, res) => {
                 res.end();
             })
             .catch((err) => {
+                res.statusCode = 500; // Internal Server Error
                 res.end(err.message);
             });
+    } else {
+        res.statusCode = 404; // Not Found
+        res.end('404 Not Found');
     }
 });
 
-app.listen(port, hostname);
+app.listen(port, hostname, () => {
+    console.log(`Server running at http://${hostname}:${port}/`);
+});
 
 module.exports = app;
