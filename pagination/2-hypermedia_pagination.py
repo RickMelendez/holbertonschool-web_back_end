@@ -65,18 +65,3 @@ class Server:
             'prev_page': page - 1 if page > 1 else None,
             'total_pages': total_pages
         }
-
-    def get_total_pages(self) -> int:
-        """this function returns the total number of pages"""
-        return int(math.ceil(len(self.dataset()) / 10))
-    
-    def get_total_records(self) -> int:
-        """this function returns the total number of records"""
-        return len(self.dataset())
-    
-    def get_total_pages_and_records(self) -> Dict:
-        """this function returns a dict with the total number of pages and records"""
-        return {
-            'total_pages': self.get_total_pages(),
-            'total_records': self.get_total_records()
-        }
