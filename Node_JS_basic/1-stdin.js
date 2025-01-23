@@ -9,4 +9,3 @@ process.stdin.on('readable', () => {
 process.stdin.on('end', () => {
   process.stdout.write('This important software is now closing\n');
 });
-1
