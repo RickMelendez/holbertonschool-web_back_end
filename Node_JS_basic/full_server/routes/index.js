@@ -20,3 +20,4 @@ function controllerRouting(app) {
 }
 
 export default controllerRouting;
+1
