@@ -47,3 +47,4 @@ class StudentsController {
 }
 
 export default StudentsController;
+1
